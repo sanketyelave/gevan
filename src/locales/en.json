@@ -1,0 +1,13 @@
+{
+    "title": "Enter Your Details",
+        "preferredLanguage": "Preferred Language",
+            "addressLabel": "Address",
+                "translateButton": "Translate Address",
+                    "saveButton": "Save Details",
+                        "translatedAddress": "Translated Address",
+                            "home": "Home",
+                                "about": "About",
+                                    "contact": "Contact",
+                                        "welcomeMessage": "Welcome to our website!",
+                                            "description": "This is a demo of language switching across multiple pages."
+}
