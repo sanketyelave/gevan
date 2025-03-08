@@ -35,48 +35,68 @@ class AppwriteService {
         }
     }
 
+    // Comprehensive session check
     async checkSession() {
         try {
-            const session = await account.getSession('current');
-            console.log("Current session:", session);
+            // Try to get the current session
+            const session = await this.account.getSession('current');
 
-
-            // if (!sessionId) {
-            //     console.log("No session ID found in storage");
-            //     return false;
-            // }
-
-            // const session = await this.account.getSession(sessionId);
             if (session) {
-                // Also get the user details if session exists
-                const userDetails = await this.getUserDetails(session.userId);
-                return { session, userDetails };
+                try {
+                    // Fetch user details
+                    const userDetails = await this.getUserDetails(session.userId);
+                    return {
+                        session,
+                        userDetails
+                    };
+                } catch (userFetchError) {
+                    console.error("Error fetching user details:", userFetchError);
+                    return false;
+                }
             }
+
             return false;
         } catch (error) {
-            console.error("Session check error:", error);
+            // Different handling for different error scenarios
+            if (error.code === 401) {
+                // Unauthorized - likely an expired or invalid token
+                console.log("Session expired or invalid");
+                return false;
+            }
+
+            console.error("Unexpected session check error:", error);
             return false;
         }
     }
-
-
-
 
     // ✅ Send OTP for phone verification
     async sendOtp(phone) {
         try {
             const userId = ID.unique(); // Generate unique user ID
             sessionStorage.setItem('userId', userId);  // Save user ID
-            // Set OTP expiry (5 minutes)
-            sessionStorage.setItem('otpExpiry', Date.now() + 600000);
+            sessionStorage.setItem('otpExpiry', Date.now() + 600000); // Set OTP expiry (10 min)
+
             console.log("Generated User ID:", userId); // Debugging
-            return await this.account.createPhoneToken(userId, phone);
+
+            // Send OTP
+            const response = await this.account.createPhoneToken(userId, phone);
+
+            // Check if OTP token is returned
+            if (response && response.secret) {
+                console.log("✅ OTP sent successfully:", response);
+                return { success: true, message: "OTP sent successfully.", data: response };
+            } else {
+                console.log("❌ OTP not sent:", response);
+                return { success: false, message: "Failed to send OTP. Please try again." };
+            }
+
         } catch (error) {
-            console.error("OTP Send Error:", error);
+            console.error("❌ OTP Send Error:", error);
             await this.cleanup();
-            throw error;
+            return { success: false, message: "An error occurred while sending OTP.", error };
         }
     }
+
 
 
     // // ✅ OTP Verification Function
@@ -99,10 +119,12 @@ class AppwriteService {
         }
     }
     // ✅ OTP Verification Function
+    // ✅ OTP Verification Function
     async verifyOtp(otp) {
         try {
             const userId = sessionStorage.getItem('userId');
             const otpExpiry = sessionStorage.getItem('otpExpiry');
+
             if (!userId) throw new Error("User ID not found. Restart the process.");
             if (!otpExpiry || Date.now() > parseInt(otpExpiry)) {
                 await this.cleanup();
@@ -117,7 +139,7 @@ class AppwriteService {
                 console.log("OTP Verified Successfully!");
                 // ✅ Store session in sessionStorage after verification
                 sessionStorage.setItem('sessionId', verificationResponse.$id);
-                return true; // Return true if OTP verification is successful
+                return verificationResponse; // Return the full session object
             } else {
                 throw new Error("OTP verification failed.");
             }
@@ -126,7 +148,6 @@ class AppwriteService {
             throw error;
         }
     }
-
     // ✅ Check if the user already exists by phone number
     async checkIfUserExists(phone) {
         try {
@@ -230,23 +251,26 @@ class AppwriteService {
     async handleOtpAndSignup(otp, userData) {
         try {
             // Step 1: Verify OTP
+            console.log('hello 3')
             const isOtpVerified = await this.verifyOtp(otp);
             // If OTP is incorrect, return false
+            console.log('hello 4')
             if (!isOtpVerified) {
-
+                console.log('hello--')
                 return false;
             }
             // Check if session is still valid
-            const isSessionValid = await this.checkSession();
-            if (!isSessionValid) {
-                throw new Error("Session expired. Please start over.");
-            }
+            // const isSessionValid = await this.checkSession();
+            // if (!isSessionValid) {
+            //     throw new Error("Session expired. Please start over.");
+            // }
 
 
 
             if (isOtpVerified) {
                 // Step 2: Proceed with user signup if OTP is verified
                 await this.signup(userData);
+                console.log('hello 5')
                 await this.cleanup();
                 // Step 3: Redirect to login after successful signup
                 // window.location.href = "/login";
@@ -261,11 +285,21 @@ class AppwriteService {
     }
 
 
-    // ✅ Clean up session storage
+    // Clean up method
     async cleanup() {
-        sessionStorage.removeItem('userId');
-        sessionStorage.removeItem('otpExpiry');
+        try {
+            // Attempt to delete current session
+            await this.account.deleteSession('current');
+
+            // Clear local storage
+            sessionStorage.removeItem('userId');
+            sessionStorage.removeItem('otpExpiry');
+            sessionStorage.removeItem('sessionId');
+        } catch (error) {
+            console.error("Cleanup error:", error);
+        }
     }
+
 
 
     //update user info function

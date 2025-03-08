@@ -45,10 +45,10 @@ const Navbar = () => {
     ];
 
     const categories = {
-        "Grains & Pulses": ['Wheat', 'Rice', 'Lentils', 'Chickpeas', 'Millets'],
-        "Fruits & Vegetables": ['Apples', 'Mangoes', 'Potatoes', 'Tomatoes', 'Leafy Greens'],
-        "Dairy & Livestock": ['Milk', 'Cheese', 'Curd', 'Ghee', 'Poultry'],
-        "Organic & Herbal": ['Organic Spices', 'Ayurvedic Herbs', 'Cold-Pressed Oils', 'Honey', 'Medicinal Plants'],
+        "Admin": ['admin/experts', 'admin/products'],
+        "User": ['add-product', 'login', 'offers-made', 'profile'],
+        "Experts": ['all-experts'],
+
     };
 
 
@@ -284,7 +284,7 @@ const Navbar = () => {
                                                 {categories[category].map((subCategory) => (
                                                     <a
                                                         key={subCategory}
-                                                        href="#"
+                                                        href={`/${subCategory}`}
                                                         className="block px-4 py-2 text-sm text-[#1F1E17] hover:bg-[#E4E2D7] hover:text-[#8B5E3C] transition-colors duration-150"
                                                     >
                                                         {subCategory}
@@ -322,7 +322,7 @@ const Navbar = () => {
                                                 {subCategories.map((subCategory) => (
                                                     <a
                                                         key={subCategory}
-                                                        href="#"
+                                                        href={`/${subCategory}`}
                                                         className="block px-3 py-2 rounded-md text-sm text-[#1F1E17] hover:text-[#4BAF47] hover:bg-[#E4E2D7] transition-colors duration-200"
                                                     >
                                                         {subCategory}

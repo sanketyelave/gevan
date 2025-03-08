@@ -194,7 +194,9 @@ export default function SignupForm() {
     const verifyOtp = async () => {
         setVerifying(true);
         try {
+            console.log('hello 1')
             await signupUser(formData.otp, formData);
+            console.log('hello 11')
             // if (isValid) {
             //     setValidation(prev => ({ ...prev, otp: true }));
             //     router.push("/dashboard");

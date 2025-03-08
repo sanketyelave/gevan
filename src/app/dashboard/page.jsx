@@ -31,24 +31,24 @@ export default function Dashboard() {
 
 
     return (
-        <ProtectedRoute>
-            <div className="">
-                <Navbar />
-                <HeroSection />
-                <OurServices />
-                <Sell />
-                <Buy />
-                <Experts />
-                <ServiceCards />
-                <Footer />
-                {/* <button
+        // <ProtectedRoute>
+        <div className="">
+            <Navbar />
+            <HeroSection />
+            <OurServices />
+            <Sell />
+            <Buy />
+            <Experts />
+            <ServiceCards />
+            <Footer />
+            {/* <button
             onClick={handleLogout}
             className="px-6 py-3 text-white bg-red-500 rounded-lg hover:bg-red-600 disabled:bg-red-300"
             disabled={loading}
         >
             {loading ? 'Logging Out...' : 'Logout'}
         </button> */}
-            </div>
-        </ProtectedRoute>
+        </div>
+        // </ProtectedRoute>
     );
 }

@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
 
+
     // ✅ Fetch user data and session on app load
     useEffect(() => {
         const fetchUser = async () => {
@@ -61,11 +62,17 @@ export const AuthProvider = ({ children }) => {
     // ✅ Function to sign up a new user
     const signupUser = async (otp, userData) => {
         try {
+            console.log('hello 2')
             const success = await appwriteService.handleOtpAndSignup(otp, userData);
+            console.log('hello 6')
             if (success) {
+                console.log('hello 7')
                 const sessionData = await appwriteService.checkSession();
+                console.log('hello 8')
                 if (sessionData) {
+                    console.log('hello 9')
                     setUser(sessionData.userDetails);
+                    console.log('hello 10')
                     router.push("/dashboard");
                 }
             }
