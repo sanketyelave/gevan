@@ -13,6 +13,7 @@ import Experts from '@/components/Experts'
 import Footer from '@/components/Footer'
 import ServiceCards from '@/components/ServiceCards'
 import { ProtectedRoute } from '../../components/ProtectedRout';
+import Equipment from '@/components/equipments'
 
 export default function Dashboard() {
     const router = useRouter();
@@ -31,24 +32,25 @@ export default function Dashboard() {
 
 
     return (
-        // <ProtectedRoute>
-        <div className="">
-            <Navbar />
-            <HeroSection />
-            <OurServices />
-            <Sell />
-            <Buy />
-            <Experts />
-            <ServiceCards />
-            <Footer />
-            {/* <button
+        <ProtectedRoute>
+            <div className="">
+                <Navbar />
+                <HeroSection />
+                <div id='Our Service'><OurServices /></div>
+                <Sell />
+                <Buy />
+                <Experts />
+                <Equipment />
+                <ServiceCards />
+                <div id='Contact'><Footer /></div>
+                {/* <button
             onClick={handleLogout}
             className="px-6 py-3 text-white bg-red-500 rounded-lg hover:bg-red-600 disabled:bg-red-300"
             disabled={loading}
         >
             {loading ? 'Logging Out...' : 'Logout'}
         </button> */}
-        </div>
-        // </ProtectedRoute>
+            </div>
+        </ProtectedRoute>
     );
 }

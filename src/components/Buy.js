@@ -1,6 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const productData = [
     {
@@ -15,7 +16,6 @@ const productData = [
         name: "Rice",
         image: "/sellProducts/carrot.png",
         highestPrice: 3500,
-
         unit: "per quintal"
     },
     {
@@ -23,7 +23,6 @@ const productData = [
         name: "Corn",
         image: "/sellProducts/tomato.png",
         highestPrice: 2200,
-
         unit: "per quintal"
     },
     {
@@ -31,12 +30,37 @@ const productData = [
         name: "Soybean",
         image: "/sellProducts/carrot.png",
         highestPrice: 4200,
-
+        unit: "per quintal"
+    },
+    {
+        id: 5,
+        name: "Barley",
+        image: "/sellProducts/onion.png",
+        highestPrice: 2700,
+        unit: "per quintal"
+    },
+    {
+        id: 6,
+        name: "Millet",
+        image: "/sellProducts/tomato.png",
+        highestPrice: 3100,
+        unit: "per quintal"
+    },
+    {
+        id: 7,
+        name: "Oats",
+        image: "/sellProducts/carrot.png",
+        highestPrice: 3800,
+        unit: "per quintal"
+    },
+    {
+        id: 8,
+        name: "Peas",
+        image: "/sellProducts/onion.png",
+        highestPrice: 4500,
         unit: "per quintal"
     }
 ];
-
-
 
 const fetchMandiPrices = async (pincode, productName) => {
     try {
@@ -123,35 +147,36 @@ const fetchMandiPrices = async (pincode, productName) => {
         return {
             price: 2500, // Default fallback price
             market: 'State Level',
-            district: district || 'Not Available',
-            state: state || 'Not Available'
+            district: 'Not Available',
+            state: 'Not Available'
         };
     }
 };
+
 const ProductCard = ({ product, pincode }) => {
     const [localMandiPrice, setLocalMandiPrice] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const getMandiPrice = async () => {
-            setLoading(true);
-            try {
-                const price = await fetchMandiPrices(pincode, product.name);
-                setLocalMandiPrice(price);
-            } catch (error) {
-                console.error('Error:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    // useEffect(() => {
+    //     const getMandiPrice = async () => {
+    //         setLoading(true);
+    //         try {
+    //             const price = await fetchMandiPrices(pincode, product.name);
+    //             setLocalMandiPrice(price);
+    //         } catch (error) {
+    //             console.error('Error:', error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
 
-        if (pincode) {
-            getMandiPrice();
-        }
-    }, [pincode, product.name]);
+    //     if (pincode) {
+    //         getMandiPrice();
+    //     }
+    // }, [pincode, product.name]);
 
     return (
-        <div className="bg-[#fff] hover:cursor-default rounded-lg overflow-hidden shadow-md font-semibold">
+        <div id="Buy Product" className="bg-[#fff] hover:cursor-default rounded-lg overflow-hidden shadow-md font-semibold">
             <div className="md:h-[12rem] h-[6rem] relative text-[#24231D]">
                 <img
                     src={product.image}
@@ -165,10 +190,7 @@ const ProductCard = ({ product, pincode }) => {
                     <p className="text-[#4BAF47]">
                         <span className="text-[#24231D] font-bold">Price</span>: ₹{product.highestPrice} {product.unit}
                     </p>
-                    {/* <p className="text-[#C5CE38]">
-                        <span className="text-[#24231D] font-bold">Lowest</span>: ₹{product.lowestPrice} {product.unit}
-                    </p> */}
-                    <p className="text-[#EEC044]">
+                    {/* <p className="text-[#EEC044]">
                         {loading ? (
                             'Loading mandi price...'
                         ) : localMandiPrice ? (
@@ -183,11 +205,10 @@ const ProductCard = ({ product, pincode }) => {
                         ) : (
                             'Mandi price not available'
                         )}
-                    </p>
+                    </p> */}
                 </div>
             </div>
         </div>
-
     );
 };
 
@@ -195,6 +216,22 @@ function Buy() {
     const [pincode, setPincode] = useState('400042');
     const [error, setError] = useState('');
     const [showPopup, setShowPopup] = useState(false);
+    const [index, setIndex] = useState(0);
+    const [currentProductIndex, setCurrentProductIndex] = useState(0);
+    const [direction, setDirection] = useState(1); // 1 for right-to-left, -1 for left-to-right
+
+    const productsPerPage = 4; // Display 4 products at a time
+    const slideAmount = 4; // Move 2 products at a time
+    const totalSlides = Math.ceil((productData.length - productsPerPage) / slideAmount) + 1;
+
+    // Auto-rotate carousel
+    useEffect(() => {
+        const interval = setInterval(() => {
+            goToNextSet();
+        }, 6000); // 3 second interval
+
+        return () => clearInterval(interval);
+    }, []);
 
     const handlePincodeChange = (e) => {
         const value = e.target.value;
@@ -212,6 +249,33 @@ function Buy() {
         }, 3000);
     };
 
+    const goToNextSet = () => {
+        setDirection(1);
+        setCurrentProductIndex(prev => {
+            // Calculate the next index, ensuring we don't go beyond product data length
+            const nextIndex = prev + slideAmount;
+            if (nextIndex > productData.length - productsPerPage) {
+                return 0; // Return to start when reaching the end
+            }
+            return nextIndex;
+        });
+    };
+
+    const goToPrevSet = () => {
+        setDirection(-1);
+        setCurrentProductIndex(prev => {
+            // Calculate the previous index, ensuring we don't go below 0
+            const prevIndex = prev - slideAmount;
+            if (prevIndex < 0) {
+                // Jump to the last valid starting position
+                return Math.max(0, Math.floor((productData.length - productsPerPage) / slideAmount) * slideAmount);
+            }
+            return prevIndex;
+        });
+    };
+
+    const visibleProducts = productData.slice(currentProductIndex, currentProductIndex + productsPerPage);
+
     return (
         <section className="pb-16 bg-[#FFFFFF] poppins relative bg-cover h-full bg-center">
             {showPopup && (
@@ -228,15 +292,72 @@ function Buy() {
                     Top Picks at the Best Prices!
                 </h1>
 
+                {/* Product Carousel */}
+                <div className="w-full overflow-hidden relative">
+                    {/* Left arrow control */}
+                    <button
+                        onClick={goToPrevSet}
+                        className="absolute top-1/2 left-2 z-10 bg-white/80 rounded-full p-2 shadow-md transform -translate-y-1/2"
+                        aria-label="Previous products"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#4BAF47]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-4 px-4 sm:px-8 md:px-16">
-                    {productData.map((product) => (
-                        <ProductCard
-                            key={product.id}
-                            product={product}
-                            pincode={pincode.length === 6 ? pincode : null}
-                        />
-                    ))}
+                    <AnimatePresence mode="wait" initial={false}>
+                        <motion.div
+                            className="flex"
+                            key={currentProductIndex}
+                            initial={{ x: direction > 0 ? '100%' : '-100%', opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: direction > 0 ? '-100%' : '100%', opacity: 0 }}
+                            transition={{
+                                duration: 0.5,
+                                ease: "easeInOut"
+                            }}
+                        >
+                            <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-4 px-4 sm:px-8 md:px-16 min-w-full">
+                                {visibleProducts.map((product) => (
+                                    <ProductCard
+                                        key={product.id}
+                                        product={product}
+                                        pincode={pincode.length === 6 ? pincode : null}
+                                    />
+                                ))}
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+
+                    {/* Right arrow control */}
+                    <button
+                        onClick={goToNextSet}
+                        className="absolute top-1/2 right-2 z-10 bg-white/80 rounded-full p-2 shadow-md transform -translate-y-1/2"
+                        aria-label="Next products"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#4BAF47]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+
+                    {/* Carousel Indicators */}
+                    <div className="flex justify-center mt-4">
+                        {Array.from({ length: totalSlides }).map((_, idx) => {
+                            const slideIndex = idx * slideAmount;
+                            return (
+                                <button
+                                    key={idx}
+                                    className={`h-2 w-2 mx-1 rounded-full ${currentProductIndex === slideIndex ? 'bg-[#4BAF47]' : 'bg-gray-300'
+                                        }`}
+                                    onClick={() => {
+                                        setDirection(slideIndex > currentProductIndex ? 1 : -1);
+                                        setCurrentProductIndex(slideIndex);
+                                    }}
+                                    aria-label={`Go to slide ${idx + 1}`}
+                                />
+                            );
+                        })}
+                    </div>
                 </div>
 
                 <div className="flex flex-row justify-center items-center mt-4 md:mt-[5rem] gap-4 sm:gap-8">
@@ -247,20 +368,11 @@ function Buy() {
                         Buy Product
                     </button>
                 </div>
-
             </div>
-            {/* <div className="mt-[6rem]">
-                <img
-                    src="/assets/sell-bottom2.png"
-                    alt="Agriculture Banner"
-                    className="w-full h-[18rem] object-cover "
-                />
-            </div> */}
         </section>
     );
 }
 
 export default Buy;
-
 
 // const API_KEY = '579b464db66ec23bdd0000018587202d058b4a436a297d15835e4d7f';

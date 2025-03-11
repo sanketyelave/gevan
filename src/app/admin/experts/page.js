@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Pencil, Trash2, Plus } from 'lucide-react';
 import { appwriteService } from '../../../lib/appwrite';
+import { ProtectedRoute } from '../../../components/ProtectedRout';
 
 const ExpertsAdmin = () => {
     const [experts, setExperts] = useState([]);
@@ -84,60 +85,61 @@ const ExpertsAdmin = () => {
 
 
     return (
-        <div className="min-h-screen bg-[#F8F7F0] p-6">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-[#1F1E17]">Manage Experts</h1>
-                    <button
-                        onClick={() => {
-                            setIsAddingNew(true);
-                            setEditForm({});
-                        }}
-                        className="bg-[#4BAF47] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#378034] transition-all"
-                    >
-                        <Plus size={20} />
-                        Add New Expert
-                    </button>
-                </div>
+        <ProtectedRoute adminOnly>
+            <div className="min-h-screen bg-[#F8F7F0] p-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex justify-between items-center mb-8">
+                        <h1 className="text-3xl font-bold text-[#1F1E17]">Manage Experts</h1>
+                        <button
+                            onClick={() => {
+                                setIsAddingNew(true);
+                                setEditForm({});
+                            }}
+                            className="bg-[#4BAF47] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#378034] transition-all"
+                        >
+                            <Plus size={20} />
+                            Add New Expert
+                        </button>
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Add New Expert Form */}
-                    {isAddingNew && (
-                        <div className="bg-white p-6 rounded-xl shadow-lg">
-                            <h3 className="text-xl font-semibold mb-4 text-[#1F1E17]">Add New Expert</h3>
-                            <ExpertForm
-                                form={editForm}
-                                setForm={setEditForm}
-                                onSave={handleAddNew}
-                                onCancel={() => setIsAddingNew(false)}
-                                onImageUpload={handleImageUpload}
-                            />
-                        </div>
-                    )}
-
-                    {/* Existing Experts */}
-                    {experts.map((expert) => (
-                        <div key={expert.$id} className="bg-white p-6 rounded-xl shadow-lg">
-                            {isEditing === expert.$id ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Add New Expert Form */}
+                        {isAddingNew && (
+                            <div className="bg-white p-6 rounded-xl shadow-lg">
+                                <h3 className="text-xl font-semibold mb-4 text-[#1F1E17]">Add New Expert</h3>
                                 <ExpertForm
                                     form={editForm}
                                     setForm={setEditForm}
-                                    onSave={() => handleUpdate(expert.$id)}
-                                    onCancel={() => setIsEditing(null)}
+                                    onSave={handleAddNew}
+                                    onCancel={() => setIsAddingNew(false)}
                                     onImageUpload={handleImageUpload}
                                 />
-                            ) : (
-                                <ExpertCard
-                                    expert={expert}
-                                    onEdit={() => handleEdit(expert)}
-                                    onDelete={() => handleDelete(expert.$id)}
-                                />
-                            )}
-                        </div>
-                    ))}
+                            </div>
+                        )}
+
+                        {/* Existing Experts */}
+                        {experts.map((expert) => (
+                            <div key={expert.$id} className="bg-white p-6 rounded-xl shadow-lg">
+                                {isEditing === expert.$id ? (
+                                    <ExpertForm
+                                        form={editForm}
+                                        setForm={setEditForm}
+                                        onSave={() => handleUpdate(expert.$id)}
+                                        onCancel={() => setIsEditing(null)}
+                                        onImageUpload={handleImageUpload}
+                                    />
+                                ) : (
+                                    <ExpertCard
+                                        expert={expert}
+                                        onEdit={() => handleEdit(expert)}
+                                        onDelete={() => handleDelete(expert.$id)}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
-        </div>
+            </div></ProtectedRoute>
     );
 };
 

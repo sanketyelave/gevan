@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,6 +9,20 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-geist-sans: 'Geist', sans-serif;
+  --font-geist-mono: 'Geist Mono', monospace;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.font-geist {
+  font-family: var(--font-geist-sans);
+}
+
+.font-geist-mono {
+  font-family: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {

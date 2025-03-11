@@ -499,6 +499,16 @@ export default function SignupForm() {
                                 </button>
                             )}
                         </div>
+                        <div className="mt-8 text-center text-[#878680]">
+                            Already have an account?{" "}
+                            <button
+                                type="button"
+                                onClick={() => router.push("/login")}
+                                className="text-[#4BAF47] hover:underline focus:outline-none"
+                            >
+                                Login here
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

@@ -97,8 +97,6 @@ class AppwriteService {
         }
     }
 
-
-
     // // ✅ OTP Verification Function
     async verifyOtplogin(usserId, otp) {
         try {
@@ -118,7 +116,7 @@ class AppwriteService {
             throw error;
         }
     }
-    // ✅ OTP Verification Function
+
     // ✅ OTP Verification Function
     async verifyOtp(otp) {
         try {
@@ -271,7 +269,7 @@ class AppwriteService {
                 // Step 2: Proceed with user signup if OTP is verified
                 await this.signup(userData);
                 console.log('hello 5')
-                await this.cleanup();
+
                 // Step 3: Redirect to login after successful signup
                 // window.location.href = "/login";
                 return true;
@@ -283,7 +281,6 @@ class AppwriteService {
 
         }
     }
-
 
     // Clean up method
     async cleanup() {
