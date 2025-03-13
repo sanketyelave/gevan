@@ -651,26 +651,28 @@ class AppwriteService {
         }
     };
 
-    // Handle offer response (accept/decline)
     async handleOfferResponse(productId, offerId, accepted) {
         try {
-            // Update offer status
+            const responseDate = new Date().toISOString();
+
+            // Update offer status and add response date
             await databases.updateDocument(
                 appwriteConfig.databaseId,
                 appwriteConfig.OFFERS_COLLECTION_ID,
                 offerId,
                 {
-                    status: accepted ? 'accepted' : 'declined'
+                    status: accepted ? 'accepted' : 'declined',
+                    responseDate: responseDate
                 }
             );
 
-            // Update product status
+            // Update product status - change 'active' to 'declined' when offer is declined
             await databases.updateDocument(
                 appwriteConfig.databaseId,
                 appwriteConfig.PRODUCTS_COLLECTION_ID,
                 productId,
                 {
-                    status: accepted ? 'accepted' : 'active',
+                    status: accepted ? 'accepted' : 'declined',
                     ...(accepted ? { finalOfferId: offerId } : {})
                 }
             );
@@ -681,7 +683,6 @@ class AppwriteService {
             throw error;
         }
     };
-
     // Get all verified products for public display
     async getVerifiedProducts() {
         try {

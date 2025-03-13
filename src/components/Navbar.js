@@ -445,21 +445,14 @@ const Navbar = () => {
                                 </button>
 
                                 <div className="relative" ref={dropdownRef}>
-                                    <button
-                                        className="p-2 rounded-full hover:bg-[#E4E2D7] transition-colors duration-200 group"
-                                        onClick={() => setActiveDropdown(activeDropdown === 'profile' ? null : 'profile')}
-                                    >
-                                        <User className="h-6 w-6 text-[#4BAF47] group-hover:text-[#1F1E17]" />
-                                    </button>
+                                    <Link href="/profile" passHref legacyBehavior>
+                                        <button
+                                            className="p-2 rounded-full hover:bg-[#E4E2D7] transition-colors duration-200 group"
+                                        >
+                                            <User className="h-6 w-6 text-[#4BAF47] group-hover:text-[#1F1E17]" />
+                                        </button>
+                                    </Link>
 
-                                    {activeDropdown === 'profile' && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-[#FFFFFF] rounded-xl shadow-lg py-2 z-50 border border-[#E4E2D7]">
-                                            <button className="w-full px-4 py-2 text-left hover:bg-[#E4E2D7] text-[#1F1E17] hover:text-[#4BAF47] transition-colors duration-200" onClick={() => window.location.href = `/profile`}>My Profile</button>
-                                            <button className="w-full px-4 py-2 text-left hover:bg-[#E4E2D7] text-[#1F1E17] hover:text-[#4BAF47] transition-colors duration-200" onClick={() => window.location.href = `/history`}>History</button>
-                                            {/* <button className="w-full px-4 py-2 text-left hover:bg-[#E4E2D7] text-[#1F1E17] hover:text-[#4BAF47] transition-colors duration-200">Sales History</button>
-                                            <button className="w-full px-4 py-2 text-left hover:bg-[#E4E2D7] text-[#1F1E17] hover:text-[#4BAF47] transition-colors duration-200">Settings</button> */}
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* Mobile menu button */}
