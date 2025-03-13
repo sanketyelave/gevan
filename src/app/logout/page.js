@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { Account } from "appwrite";
 import { useEffect, useState } from "react";
+// import React, { useState, useEffect } from 'react';
 
 const LogoutButton = () => {
     const router = useRouter();
