@@ -700,6 +700,50 @@ class AppwriteService {
             throw error;
         }
     }
+
+    async getAdminStats() {
+        try {
+            const [products, experts, offers, users] = await Promise.all([
+                // Get total products count
+                databases.listDocuments(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.PRODUCTS_COLLECTION_ID,
+                    [Query.limit(1)]  // Keep as limit(1)
+                ),
+
+                // Get total experts count
+                databases.listDocuments(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.expertsCollectionId,
+                    [Query.limit(1)]  // Keep as limit(1)
+                ),
+
+                // Get pending offers count
+                databases.listDocuments(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.OFFERS_COLLECTION_ID,
+                    [Query.equal("status", "offer-made"), Query.limit(1)]  // Keep as limit(1)
+                ),
+
+                // Get active users count
+                databases.listDocuments(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.usersCollectionId,
+                    [Query.limit(1)]  // Keep as limit(1)
+                )
+            ]);
+
+            return {
+                totalProducts: products.total,
+                totalExperts: experts.total,
+                pendingOffers: offers.total,
+                activeUsers: users.total
+            };
+        } catch (error) {
+            console.error('Error getting admin stats:', error);
+            throw error;
+        }
+    }
 }
 
 

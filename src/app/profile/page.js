@@ -5,7 +5,7 @@ import { Check, X, Loader2, Edit2, ArrowLeft } from 'lucide-react';
 import { ProtectedRoute } from '../../components/ProtectedRout';
 
 const Profile = () => {
-    const { user, updateUserProfile } = useAuth();
+    const { user, updateUserProfile, logout } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState({ type: '', content: '' });
@@ -122,6 +122,7 @@ const Profile = () => {
         <div className="min-h-screen poppins bg-gradient-to-b from-[#F8F7F0] to-white px-4 py-8 md:py-12">
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white rounded-xl shadow-lg border border-[#E4E2D7] overflow-hidden">
+
                     {/* Profile Header */}
                     <div className="p-6 md:p-8 border-b border-[#E4E2D7]">
                         <div className="flex items-center justify-between space-x-4">
@@ -135,15 +136,32 @@ const Profile = () => {
                                 <h1 className="text-2xl font-semibold text-[#1F1E17]">Profile Information</h1>
                                 <p className="mt-2 text-[#878680]">Manage your personal information</p>
                             </div>
-                            <button
-                                onClick={() => setIsEditing(!isEditing)}
-                                className={`p-2 rounded-lg transition-colors ${isEditing
-                                    ? 'bg-[#F8F7F0] text-[#878680]'
-                                    : 'bg-[#4BAF47] text-white'
-                                    }`}
-                            >
-                                {isEditing ? <X size={20} /> : <Edit2 size={20} />}
-                            </button>
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            await logout();
+
+                                        } catch (error) {
+                                            setMessage({ type: 'error', content: error.message });
+                                        }
+                                    }}
+                                    className="p-2 rounded-lg bg-[#F8F7F0] text-[#878680] hover:bg-[#EEC044] hover:text-white transition-colors"
+                                    title="Logout"
+                                >
+                                    Logout
+                                </button>
+
+                                <button
+                                    onClick={() => setIsEditing(!isEditing)}
+                                    className={`p-2 rounded-lg transition-colors ${isEditing
+                                        ? 'bg-[#F8F7F0] text-[#878680]'
+                                        : 'bg-[#4BAF47] text-white'
+                                        }`}
+                                >
+                                    {isEditing ? <X size={20} /> : <Edit2 size={20} />}
+                                </button>
+                            </div>
                         </div>
                     </div>
 

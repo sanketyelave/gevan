@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
+import LoadingPage from './loadingPage';
 
 export function ProtectedRoute({ children }) {
     const { user, loading } = useAuth();
@@ -15,7 +16,7 @@ export function ProtectedRoute({ children }) {
     }, [user, loading, router]);
 
     if (loading) {
-        return <div>Loading...</div>; // You can replace this with a proper loading component
+        return <div><LoadingPage /></div>; // You can replace this with a proper loading component
     }
 
     return user ? children : null;

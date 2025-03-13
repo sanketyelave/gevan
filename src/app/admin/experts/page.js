@@ -1,53 +1,56 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { appwriteService } from '../../../lib/appwrite';
 import { ProtectedRoute } from '../../../components/ProtectedRout';
+import Navbar from '../../../components/Navbar';
+import Footer from '../../../components/Footer';
+import { Pencil, Trash2, Plus, Users } from 'lucide-react';
 
 const ExpertsAdmin = () => {
     const [experts, setExperts] = useState([]);
     const [isEditing, setIsEditing] = useState(null);
     const [editForm, setEditForm] = useState({});
     const [isAddingNew, setIsAddingNew] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchExperts();
     }, []);
 
     const fetchExperts = async () => {
+        setLoading(true);
         try {
             const expertsData = await appwriteService.getExperts();
             setExperts(expertsData);
         } catch (error) {
             console.error('Error fetching experts:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // ✅ Handle Edit Button Click
     const handleEdit = (expert) => {
         setIsEditing(expert.$id);
         setEditForm({
             name: expert.name || "",
             email: expert.email || "",
             image: expert.image || "",
-            availability: expert.availability || "", // Add availability field
-            specialty: expert.specialty || "", // Add specialty field
+            availability: expert.availability || "",
+            specialty: expert.specialty || "",
             bio: expert.bio || "",
             phone: expert.phone || "",
         });
     };
 
-
-    // ✅ Handle Update Expert
     const handleUpdate = async (id) => {
         try {
             await appwriteService.updateExpert(id, editForm);
             setIsEditing(null);
-            fetchExperts(); // Refresh list after update
+            fetchExperts();
         } catch (error) {
             console.error("Error updating expert:", error);
         }
-
     };
 
     const handleDelete = async (id) => {
@@ -83,29 +86,70 @@ const ExpertsAdmin = () => {
         }
     };
 
-
     return (
-        <ProtectedRoute adminOnly>
-            <div className="min-h-screen bg-[#F8F7F0] p-6">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-3xl font-bold text-[#1F1E17]">Manage Experts</h1>
-                        <button
-                            onClick={() => {
-                                setIsAddingNew(true);
-                                setEditForm({});
-                            }}
-                            className="bg-[#4BAF47] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#378034] transition-all"
-                        >
-                            <Plus size={20} />
-                            Add New Expert
-                        </button>
-                    </div>
+        <ProtectedRoute>
+            <Navbar />
+            <div>
+                <div
+                    className="relative w-full h-40 flex items-center justify-center bg-cover bg-center mt-[8rem]"
+                    style={{ backgroundImage: "url('/assets/title.png')" }}
+                >
+                    <motion.h1
+                        className="text-4xl font-bold text-white bg-opacity-50 px-6 py-3 rounded-lg"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        Manage Experts
+                    </motion.h1>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="min-h-screen bg-gradient-to-b from-[#F8F7F0] to-white px-4 py-8 md:py-12">
+                    <div className="max-w-4xl mx-auto">
+                        {/* Admin Welcome */}
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-semibold text-[#1F1E17]">Experts Management</h2>
+                            <p className="text-[#878680] mt-2">Review, add, or remove experts from the platform</p>
+                        </div>
+
+                        {/* Add New Expert Button */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-white rounded-xl shadow-lg border border-[#E4E2D7] overflow-hidden hover:shadow-xl transition-shadow mb-6"
+                        >
+                            <div className="p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-[#4BAF47]/10 rounded-lg">
+                                        <Users className="h-6 w-6 text-[#4BAF47]" />
+                                    </div>
+                                    <span className="text-[#878680] text-sm">Admin Area</span>
+                                </div>
+                                <h3 className="text-xl font-semibold text-[#1F1E17] mb-2">Expert Management</h3>
+                                <p className="text-[#878680] mb-6">Add a new expert to your platform</p>
+
+                                <button
+                                    onClick={() => {
+                                        setIsAddingNew(true);
+                                        setEditForm({});
+                                    }}
+                                    className="w-full flex items-center justify-between bg-[#4BAF47] hover:bg-[#4BAF47]/90 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                                >
+                                    <span>Add New Expert</span>
+                                    <Plus size={20} />
+                                </button>
+                            </div>
+                        </motion.div>
+
                         {/* Add New Expert Form */}
                         {isAddingNew && (
-                            <div className="bg-white p-6 rounded-xl shadow-lg">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="bg-white rounded-xl shadow-lg border border-[#E4E2D7] overflow-hidden mb-6 p-6"
+                            >
                                 <h3 className="text-xl font-semibold mb-4 text-[#1F1E17]">Add New Expert</h3>
                                 <ExpertForm
                                     form={editForm}
@@ -114,32 +158,54 @@ const ExpertsAdmin = () => {
                                     onCancel={() => setIsAddingNew(false)}
                                     onImageUpload={handleImageUpload}
                                 />
-                            </div>
+                            </motion.div>
                         )}
 
-                        {/* Existing Experts */}
-                        {experts.map((expert) => (
-                            <div key={expert.$id} className="bg-white p-6 rounded-xl shadow-lg">
-                                {isEditing === expert.$id ? (
-                                    <ExpertForm
-                                        form={editForm}
-                                        setForm={setEditForm}
-                                        onSave={() => handleUpdate(expert.$id)}
-                                        onCancel={() => setIsEditing(null)}
-                                        onImageUpload={handleImageUpload}
-                                    />
+                        {/* Experts List */}
+                        <div className="bg-white rounded-xl shadow-lg border border-[#E4E2D7] overflow-hidden">
+                            <div className="p-6">
+                                <h3 className="text-lg font-semibold text-[#1F1E17] mb-4">Current Experts</h3>
+
+                                {loading ? (
+                                    <div className="flex justify-center p-8">
+                                        <span className="inline-block w-8 h-8 rounded-full border-2 border-[#4BAF47] border-t-transparent animate-spin"></span>
+                                    </div>
                                 ) : (
-                                    <ExpertCard
-                                        expert={expert}
-                                        onEdit={() => handleEdit(expert)}
-                                        onDelete={() => handleDelete(expert.$id)}
-                                    />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {experts.map((expert) => (
+                                            <motion.div
+                                                key={expert.$id}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.3 }}
+                                                className="bg-[#F8F7F0] p-6 rounded-xl hover:shadow-md transition-shadow"
+                                            >
+                                                {isEditing === expert.$id ? (
+                                                    <ExpertForm
+                                                        form={editForm}
+                                                        setForm={setEditForm}
+                                                        onSave={() => handleUpdate(expert.$id)}
+                                                        onCancel={() => setIsEditing(null)}
+                                                        onImageUpload={handleImageUpload}
+                                                    />
+                                                ) : (
+                                                    <ExpertCard
+                                                        expert={expert}
+                                                        onEdit={() => handleEdit(expert)}
+                                                        onDelete={() => handleDelete(expert.$id)}
+                                                    />
+                                                )}
+                                            </motion.div>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
-                        ))}
+                        </div>
                     </div>
                 </div>
-            </div></ProtectedRoute>
+            </div>
+            <Footer />
+        </ProtectedRoute>
     );
 };
 
