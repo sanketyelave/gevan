@@ -557,25 +557,23 @@ const Navbar = () => {
                             <div className="flex items-center justify-center space-x-8">
                                 {Object.keys(categories).map((category) => (
                                     <div key={category} className="relative justify-center group" ref={dropdownRef}>
-                                        <button
+                                        <Link
+                                            href={category === "Home" ? "/dashboard" : `/dashboard#${category}`}
                                             className="text-[#1F1E17] hover:text-[#8B5E3C] font-extrabold px-3 py-2 text-sm transition-colors duration-200 flex items-center"
                                             onClick={(e) => {
-                                                e.preventDefault();
-                                                const section = document.getElementById(category);
-                                                if (section) {
-                                                    section.scrollIntoView({ behavior: "smooth" }); // Smooth scrolling
-
-                                                    // Handle URL differently for Home category
-                                                    if (category === "Home") {
-                                                        window.history.pushState(null, "", "/dashboard"); // Just base route for Home
-                                                    } else {
-                                                        window.history.pushState(null, "", `/dashboard#${category}`); // Add hash for other categories
+                                                // This handles the smooth scrolling part
+                                                if (category !== "Home") {
+                                                    e.preventDefault();
+                                                    const section = document.getElementById(category);
+                                                    if (section) {
+                                                        section.scrollIntoView({ behavior: "smooth" });
+                                                        window.history.pushState(null, "", `/dashboard#${category}`);
                                                     }
                                                 }
                                             }}
                                         >
                                             {category}
-                                        </button>
+                                        </Link>
 
 
                                         {/* Dropdown menu */}
@@ -610,20 +608,23 @@ const Navbar = () => {
                                 {/* Categories in mobile menu */}
                                 {Object.entries(categories).map(([category, subCategories]) => (
                                     <div key={category} className="space-y-1">
-                                        <button
-                                            className="w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-medium text-[#1F1E17] hover:text-[#4BAF47] hover:bg-[#E4E2D7] transition-colors duration-200"
+                                        <Link
+                                            href={category === "Home" ? "/dashboard" : `/dashboard#${category}`}
+                                            className="text-[#1F1E17] hover:text-[#8B5E3C] font-extrabold px-3 py-2 text-sm transition-colors duration-200 flex items-center"
                                             onClick={(e) => {
-                                                e.preventDefault();
-                                                const section = document.getElementById(category);
-                                                if (section) {
-                                                    section.scrollIntoView({ behavior: "smooth" }); // Smooth scrolling
-                                                    window.history.pushState(null, "", `/dashboard#${category}`); // Update URL without refresh
+                                                // This handles the smooth scrolling part
+                                                if (category !== "Home") {
+                                                    e.preventDefault();
+                                                    const section = document.getElementById(category);
+                                                    if (section) {
+                                                        section.scrollIntoView({ behavior: "smooth" });
+                                                        window.history.pushState(null, "", `/dashboard#${category}`);
+                                                    }
                                                 }
                                             }}
                                         >
                                             {category}
-                                            {/* <ChevronDown className={`h-4 w-4 transform transition-transform duration-200 ${activeDropdown === category ? 'rotate-180' : ''} text-[#878680]`} /> */}
-                                        </button>
+                                        </Link>
 
                                         {/* {activeDropdown === category && (
                                             <div className="pl-4 space-y-1">
